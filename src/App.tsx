@@ -1,49 +1,19 @@
 import React from "react";
 import { useEffect, useState } from "react";
-import "./App.css";
+import NavBar from "./components/NavBar";
+import CourseEnrollments from "./components/CourseEnrollments";
 
 type CourseType = {
   heading: string;
   name: string;
   id: string;
+  image_url: string;
   enrollments: [{ name: string; email: string; id: string }];
-};
-
-const Course = ({ enrollments }) => {
-  return (
-    <div className="container  mt-6">
-      <h1 className="container mx-auto bg-gray-400 rounded-xl p-3 mb-5">
-        Enrolled Users
-      </h1>
-      {enrollments && (
-        <div className="grid md:grid-cols-3 gap-3">
-          {enrollments.map((enrollment) => {
-            return (
-              <div className="p-3 m-2 w-full">
-                <div className="flex space-x-4">
-                  <div className="avatar">
-                    <img
-                      className="w-16 rounded-full"
-                      src="https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png"
-                    />
-                  </div>
-                  <div className="space-y-1 py-2">
-                    <div> {enrollment.name}</div>
-                    <div>{enrollment.email}</div>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
-    </div>
-  );
 };
 
 function App() {
   const [courses, setCourses] = useState<CourseType[]>([]);
-  const [courseList, setCourseList] = useState([]);
+  const [courseList, setCourseList] = useState({});
   const [userList, setUserList] = useState({});
   const [courseId, setCourseId] = useState([]);
   const [users, setUsers] = useState([]);
@@ -143,42 +113,48 @@ function App() {
   };
 
   return (
-    <div className="container mx-auto bg-gray-200 rounded-xl shadow border p-8 m-10">
-      {/* body - shows list of courses */}
-      <div className="container mx-auto bg-gray-400 rounded-xl p-8 m-5">
-        {/* header */}
-        <div>
-          <h1 className="container mx-auto bg-gray-400 rounded-xl p-3 mb-5">
-            Courses
-          </h1>
-        </div>
-        {courseList && (
-          <div className="grid md:grid-cols-3 gap-5">
-            {courses.map((course: CourseType) => {
-              return (
-                <div
-                  className="block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700"
-                  key={course.id}
-                  id={course.id}
-                  onClick={() => handleCourseClick(course.id)}
-                >
-                  <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                    {course.name}
-                  </h5>
-                  <p className="font-normal text-gray-700 dark:text-gray-400">
-                    {course.heading}
-                  </p>
-                </div>
-              );
-            })}
+    <>
+      <NavBar />
+      <div className="mx-auto bg-gray-100 p-8">
+        <div className="container mx-auto">
+          {/* header */}
+          <div>
+            <h1 className=" mb-5 text-4xl">Courses</h1>
           </div>
-        )}
 
-        {/* drawer opens that contains list of users in each course */}
+          {/* body - shows list of courses */}
+          {courseList && (
+            <div className="grid md:grid-cols-3">
+              {courses.map((course: CourseType) => {
+                return (
+                  <div
+                    className="block max-w-sm rounded shadow-lg shadow-gray-500 hover:bg-gray-100 dark:bg-white dark:hover:bg-gray-200 m-7"
+                    key={course.id}
+                    id={course.id}
+                    onClick={() => handleCourseClick(course.id)}
+                  >
+                    <img
+                      className="w-full max-h-60 object-cover"
+                      src={course.image_url}
+                    />
+                    <div className="p-4">
+                      <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-gray-600">
+                        {course.name}
+                      </h5>
+                      <p className="font-normal">{course.heading}</p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
 
-        {isOpen && <Course enrollments={enrollments} />}
+          {/* drawer opens that contains list of users in each course */}
+
+          {isOpen && <CourseEnrollments enrollments={enrollments} />}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 
