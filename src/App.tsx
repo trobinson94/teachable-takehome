@@ -3,15 +3,13 @@ import { useEffect, useState } from "react";
 import "./App.css";
 
 type CourseType = {
-  id?: string;
-  name?: string;
-  heading?: string;
-  enrollments: [{ name: string; email: string; id: string }] | any;
+  heading: string;
+  name: string;
+  id: string;
+  enrollments: [{ name: string; email: string; id: string }];
 };
 
-const Course = ({ enrollments }: CourseType) => {
-  // const [enrollments, setEnrollments] = useState([]);
-
+const Course = ({ enrollments }) => {
   return (
     <div className="container  mt-6">
       <h1 className="container mx-auto bg-gray-400 rounded-xl p-3 mb-5">
@@ -30,8 +28,8 @@ const Course = ({ enrollments }: CourseType) => {
                     />
                   </div>
                   <div className="space-y-1 py-2">
-                    <div> {`${enrollment.name}`}</div>
-                    <div>{` ${enrollment.email}`}</div>
+                    <div> {enrollment.name}</div>
+                    <div>{enrollment.email}</div>
                   </div>
                 </div>
               </div>
@@ -45,18 +43,18 @@ const Course = ({ enrollments }: CourseType) => {
 
 function App() {
   const [courses, setCourses] = useState<CourseType[]>([]);
-  const [courseList, setCourseList] = useState({});
+  const [courseList, setCourseList] = useState([]);
   const [userList, setUserList] = useState({});
   const [courseId, setCourseId] = useState([]);
   const [users, setUsers] = useState([]);
   const [enrollments, setEnrollments] = useState([]);
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     const fetchCourses = async () => {
       const courseData = await fetch(
         "https://developers.teachable.com/v1/courses",
         {
-          method: "GET",
           headers: {
             accept: "application/json",
             apiKey: "7JbSA3ep6XOMV3t8t7QXuXq9HS79Dwnr",
@@ -77,7 +75,7 @@ function App() {
             heading: currVal.heading,
           },
         };
-      }, {});
+      }, []);
 
       setCourseList(coursesDict);
     };
@@ -90,7 +88,6 @@ function App() {
       const usersData = await fetch(
         "https://developers.teachable.com/v1/users",
         {
-          method: "GET",
           headers: {
             accept: "application/json",
             apiKey: "7JbSA3ep6XOMV3t8t7QXuXq9HS79Dwnr",
@@ -100,7 +97,6 @@ function App() {
 
       const userResults = await usersData.json();
       const newUsers = await userResults;
-      // console.log(userResults.users);
       setUsers(newUsers.users);
 
       const usersDict = newUsers.users.reduce((acc, currVal) => {
@@ -111,7 +107,7 @@ function App() {
             email: currVal.email,
           },
         };
-      }, {});
+      }, []);
 
       setUserList(usersDict);
     };
@@ -122,12 +118,12 @@ function App() {
   const handleCourseClick = (id) => {
     console.log(id);
     setCourseId(id);
+    setIsOpen(!isOpen);
 
     const enrollmentsFetch = async () => {
       const response = await fetch(
         `https://developers.teachable.com/v1/courses/${id}/enrollments`,
         {
-          method: "GET",
           headers: {
             accept: "application/json",
             apiKey: "7JbSA3ep6XOMV3t8t7QXuXq9HS79Dwnr",
@@ -135,13 +131,11 @@ function App() {
         }
       );
       const enrollmentsJson = await response.json();
-      console.log(enrollmentsJson.enrollments);
 
       const enrolledStudentsInfo = enrollmentsJson.enrollments.map(
         ({ user_id }) => userList[user_id]
       );
 
-      console.log(enrolledStudentsInfo);
       setEnrollments(enrolledStudentsInfo);
     };
 
@@ -158,9 +152,9 @@ function App() {
             Courses
           </h1>
         </div>
-        {courses && (
+        {courseList && (
           <div className="grid md:grid-cols-3 gap-5">
-            {courses.map((course) => {
+            {courses.map((course: CourseType) => {
               return (
                 <div
                   className="block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700"
@@ -169,9 +163,11 @@ function App() {
                   onClick={() => handleCourseClick(course.id)}
                 >
                   <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                    {`${course.name}`}
+                    {course.name}
                   </h5>
-                  <p className="font-normal text-gray-700 dark:text-gray-400">{`${course.heading}`}</p>
+                  <p className="font-normal text-gray-700 dark:text-gray-400">
+                    {course.heading}
+                  </p>
                 </div>
               );
             })}
@@ -180,7 +176,7 @@ function App() {
 
         {/* drawer opens that contains list of users in each course */}
 
-        <Course enrollments={enrollments} />
+        {isOpen && <Course enrollments={enrollments} />}
       </div>
     </div>
   );
