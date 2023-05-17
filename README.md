@@ -1,6 +1,7 @@
-# Getting Started with Create React App
+# Teachable Take-home Assessment
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+![alt text](https://media.discordapp.net/attachments/1075824427142484029/1108446430181466273/Screen_Shot_2023-05-17_at_1.30.12_PM.png?width=1960&height=1168)
 
 ## Available Scripts
 
